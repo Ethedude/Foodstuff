@@ -4,18 +4,19 @@ module.exports = async (req, res) => {
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
     if (req.method !== 'POST') {
-        return res.status(405).send('Method Not Allowed');
+        return res.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    // Debugging: Check if API key is accessible
+    // Check for the presence of the OpenAI API key
     if (!process.env.OPENAI_API_KEY) {
-        return res.status(500).json({ error: "Missing OpenAI API key" });
+        console.error("Missing OpenAI API key");
+        return res.status(500).json({ error: "Server configuration error: Missing OpenAI API key" });
     }
 
     const { message } = req.body;
 
     try {
-        const response = await fetch('https://foodstuff-q6wk.vercel.app/chat.js', {
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -29,9 +30,16 @@ module.exports = async (req, res) => {
             })
         });
 
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error("API call error:", errorText);
+            return res.status(response.status).json({ error: "Failed to fetch from OpenAI API", details: errorText });
+        }
+
         const data = await response.json();
         res.json({ reply: data.choices[0].message.content });
     } catch (error) {
-        res.status(500).json({ error: 'An error occurred', details: error.message });
+        console.error("Unexpected server error:", error);
+        res.status(500).json({ error: 'Unexpected server error', details: error.message });
     }
 };
