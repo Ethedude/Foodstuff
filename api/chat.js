@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
     const { message } = req.body;
 
     try {
-        const response = await fetch('https://foodstuff-q6wk.vercel.app/api/chat', {
+        const response = await fetch('https://foodstuff-q6wk.vercel.app/api/chat.js', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
