@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
         }
 
         // Call OpenAI API
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        const response = await fetch('https://foodstuff-q6wk.vercel.app/chat.js', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
